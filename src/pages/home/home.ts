@@ -3,6 +3,7 @@ import { IonicPage, NavController, AlertController, Platform } from 'ionic-angul
 import { ChecklistModel } from '../../models/checklist-model';
 import { DataProvider } from '../../providers/data/data';
 import { Keyboard } from '@ionic-native/keyboard';
+import { Storage } from '@ionic/storage';
 
 @IonicPage()
 @Component({
@@ -14,12 +15,20 @@ export class HomePage {
   checklists: ChecklistModel[] = [];
 
   constructor(public nav: NavController, public dataService: DataProvider, 
-      public alertCtrl: AlertController, public platform: Platform, 
+      public alertCtrl: AlertController, public storage: Storage, public platform: Platform, 
       public keyboard: Keyboard) {
   }
 
   ionViewDidLoad(){
     this.platform.ready().then(() => {
+      
+      this.storage.get('introShown').then((result) => {
+        if(!result){
+          this.storage.set('introShown', true);
+          this.nav.setRoot('IntroPage');
+        }
+      });
+
       this.dataService.getData().then((checklists) => {
         let savedChecklists: any = false;
         if(typeof(checklists) != "undefined"){
